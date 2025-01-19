@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMX Studio - Visualisation 3D</title>
+    <style>
+        :root {
+            --fmx-blue: #00BFFF;
+            --fmx-dark-blue: #0066cc;
+            --fmx-light-blue: #80dfff;
+            --fmx-accent: #FF1493;
+            --clr-r-d: #000000;
+            --clr-r-l: #C44536;
+            --clr-l: #EDDDD4;
+            --clr-pur: #781940;
+            --clr-g-d: #283D3B;
+            --clr-g-l: #197278;
+
+        }
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+    
+        body {
+            background: #f8f9fa;
+        }
+    
+        .header {
+            background: linear-gradient(135deg, var(--fmx-blue) 0%, var(--fmx-dark-blue) 100%);
+            /* background: white; */
+            padding: 2rem;
+            text-align: center;
+            color: white;
+            /* color: #FF1493; */
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 191, 255, 0.2);
+            font-size: smaller;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            text-align: left;
+
+            
+        }
+    
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+        }
+    
+        .tabs {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+    
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+    
+        .tab-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: var(--fmx-dark-blue);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 191, 255, 0.1);
+        }
+    
+        .tab-btn:hover {
+            background: var(--fmx-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+    
+        .tab-btn.active {
+            background: var(--fmx-blue);
+            color: white;
+        }
+    
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+    
+        .tab-content.active {
+            display: block;
+            text-align: center;  /* Centre le texte ou les éléments en ligne horizontalement */
+
+        }
+    
+        .offers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+    
+        .offer-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 191, 255, 0.1);
+        }
+    
+        .offer-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0, 191, 255, 0.2);
+        }
+    
+        .offer-header {
+            background: linear-gradient(135deg, var(--fmx-blue), var(--fmx-dark-blue));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+    
+        .offer-price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+    
+        .offer-content {
+            padding: 2rem;
+        }
+    
+        .offer-features {
+            list-style: none;
+            margin: 1rem 0;
+        }
+    
+        .offer-features li {
+            margin: 0.8rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #444;
+        }
+    
+        .offer-features li::before {
+            content: "✓";
+            color: var(--fmx-blue);
+            position: absolute;
+            left: 0;
+        }
+    
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: var(--fmx-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+    
+        .cta-button:hover {
+            background: var(--fmx-dark-blue);
+            transform: translateY(-2px);
+        }
+    
+        .portfolio {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+        }
+    
+        .portfolio h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--fmx-dark-blue);
+            font-size: 2rem;
+        }
+    
+        .carousel {
+            position: relative;
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 191, 255, 0.15);
+        }
+    
+        .carousel img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+    
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--fmx-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+    
+        .carousel-btn:hover {
+            background: var(--fmx-dark-blue);
+            transform: translateY(-50%) scale(1.1);
+        }
+    
+        .carousel-btn.prev {
+            left: 1rem;
+        }
+    
+        .carousel-btn.next {
+            right: 1rem;
+        }
+    
+        .contact-form {
+            max-width: 600px;
+            margin: 1rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 196, 255, 0.3);
+        }
+    
+        .contact-form h2 {
+            text-align: center;
+            color: var(--fmx-dark-blue);
+            margin-bottom: 1.5rem;
+        }
+    
+        .contact-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+    
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--fmx-blue);
+        }
+    
+        @media (max-width: 768px) {
+            .offers {
+                grid-template-columns: 1fr;
+            }
+    
+            .tab-buttons {
+                flex-direction: column;
+            }
+    
+            .tab-btn {
+                width: 100%;
+            }
+        }
+
+
+
+
+
+.card video {
+  width: 75%;
+  border-radius: 12px;
+  height: 200px; /* Ajustez cette valeur en fonction de vos besoins */
+  object-fit: cover; /* Vous pouvez changer cela en 'contain' si vous préférez */
+  margin-bottom: 20px; /* Espace entre la vidéo et la liste */
+}
+
+.card img {
+  width: 75%;
+  border-radius: 12px;
+  height: 200px; /* Ajustez cette valeur en fonction de vos besoins */
+  object-fit: cover; /* Vous pouvez changer cela en 'contain' si vous préférez */
+  margin-bottom: 20px; /* Espace entre la vidéo et la liste */
+}
+
+
+
+
+.card{
+  display:inline-block;
+  position:relative;
+  background: white;
+  color: $clr-g-d;
+  width:350px;
+  height:650px;
+  border-radius: 20px;
+  overflow:hidden;
+  margin: 0 auto;
+  text-align:center;
+  box-shadow:0 11px 26px 1px #0000004a, inset 0 -16px 90px #C4453640;
+  
+  h2 {
+    margin: 0;
+    width: 100%;
+    font-size: 30px;
+    padding: 20px 0;
+    color: white;
+    background: linear-gradient(135deg, var(--fmx-blue), var(--fmx-dark-blue));
+    box-shadow:inset 0px 5px 4px -4px #ecddd461;
+  }
+  
+  h3{
+    margin:10px 0;
+    font-size:45px;
+    text-shadow: 3px 2px 2px #283d3b38;
+    span{
+      font-size:15px;
+    } 
+  } 
+
+  
+  p{
+    font-style:italic;
+    margin:0 0 30px 0;
+  }
+  
+  ul{
+    text-align:left;
+    padding:0 50px;
+    margin:0;
+    li{
+      display:block;
+      
+      &:not(:last-child){
+        margin-bottom:10px;
+      }
+      
+      &.aval::before{
+        font-family: "Font Awesome 5 Free";
+        content: "\f00c";
+        font-weight: 900;
+        font-size:20px;
+        color:$clr-g-l;
+        width:40px;
+        display:inline-block;
+      }      
+      &.unaval::before{
+        font-family: "Font Awesome 5 Free";
+        content: "\f00d";
+        font-weight: 900;
+        font-size:20px;
+        color: $clr-r-l;
+        width:40px;
+        display:inline-block;
+      }
+    }
+  }
+  
+  .select{
+    cursor:pointer;
+    margin-top:20px;
+    padding:10px 20px;
+    border:none;
+    font-weight:700;
+    background: #3e3e3e;
+    color:#efefef;
+    font-size:15px;
+    font-family:inherit;
+    box-shadow: 0 8px 18px 4px #283d3b4d;
+    
+    &::before{
+        font-family: "Font Awesome 5 Free";
+        content: "\f07a";
+        font-weight: 900;
+        margin-right:15px;
+    }
+  }
+  
+
+
+  .hot-badge::after {
+    content: 'PRO';
+    position: absolute;
+    background: linear-gradient(to right, #ffd400, #ffbc00); /* Assurez-vous que la couleur est correcte */
+    padding: 5px 54px;
+    box-shadow: 0 0 5px 3px #715e006e;
+    top: 17px;
+    right: -46px;
+    color: #5d4d00;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    -webkit-transform: rotateZ(45deg);
+    transform: rotateZ(45deg);
+}
+
+
+.creator-link{
+  &:link, &:visited{
+    text-decoration: none;
+    color: #d8d8d8;
+    background: #2d2d2d;
+    text-shadow: 0 1px 3px black;
+    position: fixed;
+    bottom: 40px;
+    right: -54px;
+    padding: 5px 0px;
+    margin: 0 auto;
+    width: 230px;
+    text-align: center;
+    display: block;
+    font-size: 20px;
+    font-family: 'Nunito', sans-serif;
+    margin-top: 50px;
+    transform: rotateZ(-45deg);  
+    z-index:10;
+    transition:150ms;
+  }
+  &:hover{
+    background: #56251f;
+    color: white;
+  }
+}
+// Made by Zvi Kantor
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Visualisation 3D et Maquettes Numériques</h1>
+    </header>
+
+    <div class="tabs">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="openTab('cuisine')">Cuisine</button>
+            <button class="tab-btn" onclick="openTab('dressing')">Dressing</button>
+            <button class="tab-btn" onclick="openTab('salon')">Salon</button>
+            <button class="tab-btn" onclick="openTab('chambre')">Chambre</button>
+            <button class="tab-btn" onclick="openTab('douche')">Douche</button>
+            <button class="tab-btn" onclick="openTab('salleManger')">Salle à manger</button>
+            <button class="tab-btn" onclick="openTab('alucobond')">Alucobond</button>
+        </div>
+
+        <div  id="cuisine" class="tab-content active">
+            <div class="card card-1">
+                <h2>Standard</h2>
+                <h3>25 000F<span>/maquette.</span></h3>
+                <p><b> Pour les particuliers </b> (Prix du marché ) </p>
+                <video controls width="100%" autoplay>
+                  <source src="/cuisines/video1.mp4" type="video/mp4" >
+                  Your browser does not support the video tag.
+                </video>
+                <ul>
+            <li>✅ 5 modifications incluses</li>
+            <li>✅ 2 designs différents</li>
+            <li>✅ Meubles standards</li>
+            <li>✅ 2 meubles personnalisables</li>
+            <li>✅ 1 000 F/modification </li>
+            <li>✅ Livraison le même jour</li>
+        </ul>
+              </div>
+              
+              <div  class="card card-2 hot-badge">
+                <h2>Partenaire</h2>
+                <h3>9 000F<span>/maquette.</span></h3>
+                <p> <b>Pour les professionnels</b> (forfaitaire)</p>
+                <img src="/cuisines/image1.png" alt="Your browser does not support the image tag." width="100%">
+            <ul>
+            <li>✅ 2 designs différents</li>
+            <li>✅ Meubles standards</li>
+            <li>✅ 1 meuble personnalisable</li>
+            <li>✅ Modifications limitées à 2 </li>
+            <li>✅ 2 000 F/modification </li>
+            <li>✅ Livraison le même jour</li>
+            </ul>
+              </div>
+              
+              <div class="card card-3">
+                <h2>Premium</h2>
+                <h3>65 000F <span>/maquette.</span></h3>
+                <p>haut de gamme</p>
+                <video controls width="100%" autoplay>
+                  <source src="/cuisines/video2.mp4"  type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+            <ul>
+                <li>✅ +5 meubles personnalisables</li>
+                <li>✅ Détails essentiels de cuisines</li>
+                <li>✅ Détails de décoration complète</li>
+                <li>✅ Maquette sur-mesure </li>
+                <li>✅ Modifications illimitées</li>
+                <li>✅ Livraison 2 jours</li>
+            </ul>
+              </div>
+
+        <div class="portfolio">
+        <h2>Nos Réalisations</h2>
+        <div class="carousel cuisine-carousel">
+            <img src="/cuisines/image2.png" alt="Réalisation Cuisine" id="carousel-img-cuisine">
+            <button class="carousel-btn prev" onclick="prevImage('cuisine')">←</button>
+            <button class="carousel-btn next" onclick="nextImage('cuisine')">→</button>
+        </div>
+        </div>
+
+        </div>
+
+
+        <!-- Autres onglets similaires -->
+
+        <div id="dressing" class="tab-content"> 
+            <div class="card card-1">
+                <h2>Standard</h2>
+                <h3>25 000F<span>/maquette.</span></h3>
+                <p><b> Pour les particuliers </b> (Prix du marché ) </p>
+                <img src="/dressing/dressing1.png" alt="Your browser does not support the image tag." width="100%">
+                <ul>
+            <li>✅ 5 modifications incluses</li>
+            <li>✅ 2 designs différents</li>
+            <li>✅ Meubles standards</li>
+            <li>✅ 2 meubles personnalisables</li>
+            <li>✅ 1 000 F/modification </li>
+            <li>✅ Livraison le même jour</li>
+        </ul>
+              </div>
+              
+              <div  class="card card-2 hot-badge">
+                <h2>Partenaire</h2>
+                <h3>9 000F<span>/maquette.</span></h3>
+                <p> <b>Pour les professionnels</b> (forfaitaire)</p>
+                <img src="/dressing/dressing2.png" alt="Your browser does not support the image tag." width="100%">
+            <ul>
+            <li>✅ 2 designs différents</li>
+            <li>✅ Meubles standards</li>
+            <li>✅ 1 meuble personnalisable</li>
+            <li>✅ Modifications limitées à 2 </li>
+            <li>✅ 2 000 F/modification </li>
+            <li>✅ Livraison le même jour</li>
+            </ul>
+              </div>
+              
+              <div class="card card-3">
+                <h2>Premium</h2>
+                <h3>65 000F <span>/maquette.</span></h3>
+                <p>haut de gamme</p>
+                <video controls width="100%">
+                  <source src="path_to_video_premium.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+            <ul>
+                <li>✅ +5 meubles personnalisables</li>
+                <li>✅ Détails essentiels de cuisines</li>
+                <li>✅ Détails de décoration complète</li>
+                <li>✅ Maquette sur-mesure </li>
+                <li>✅ Modifications illimitées</li>
+                <li>✅ Livraison 2 jours</li>
+            </ul>
+              </div>   
+              <div class="portfolio">
+
+        <h2>Nos Réalisations</h2>
+        <div class="carousel cuisine-carousel">
+            <img src="/dressing/dressing1.png" alt="Réalisation Dressing" id="carousel-img-dressing">
+            <button class="carousel-btn prev" onclick="prevImage('dressing')">←</button>
+            <button class="carousel-btn next" onclick="nextImage('dressing')">→</button>
+        </div>
+        </div>
+
+        </div>
+                        
+    </div>
+
+    <div class="contact-form">
+    <h2>Contactez-nous</h2>
+    <div style="display: flex; align-items: center;justify-content: space-around;" class="row" >
+        <div>
+        <label for="email">
+            <img src="https://img.icons8.com/color/48/000000/message-squared.png" alt="Email Logo" style="width: 24px; vertical-align: middle;">
+            <span>contact@fmxstudio.com</span>
+        </label>
+    </div>
+    <div>
+        <label for="phone">
+            <img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp Logo" style="width: 24px; vertical-align: middle;">
+            <span>+22605008500</span>
+        </label>
+    </div>    
+    </div>
+
+    <div style="display: none;">
+        <textarea id="message" rows="4" placeholder="Votre message (facultatif)"></textarea>
+    </div>
+    <div>
+        <button class="cta-button" onclick="sendWhatsApp()">Contacter sur WhatsApp</button>
+        <button class="cta-button" onclick="sendEmail()">Contacter par Email</button>
+    </div>
+</div>
+
+    <footer style="display: flex; text-align: center; align-items :center ; justify-content: center;" class="footer">
+        <img style="width: 70px; height: 70px;color: black; padding:  20px 0; margin-right: 15px; " src="https://www.fmxstudio.com/images/fmx_logo_g.svg" alt="">
+        <p>© 2021 FMX Studio. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        function sendWhatsApp() {
+    const phone = '+22605008500'; // Remplacez par votre numéro de téléphone
+    const message = document.getElementById('message').value;
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+}
+
+function sendEmail() {
+    const email = 'contact@fmxstudio.com'; // Remplacez par votre adresse e-mail
+    const message = document.getElementById('message').value;
+    const subject = 'Contact depuis le site web';
+    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    window.location.href = mailtoLink;
+}
+
+
+        const cuisineImages = [
+    '/cuisines/image3.png',
+    '/cuisines/image4.png',
+    '/cuisines/image5.png',
+    '/cuisines/image2.png',
+
+
+];
+
+const dressingImages = [
+'/dressing/dressing1.png',
+    '/dressing/dressing2.png',
+    '/dressing/dressing3.png'
+];
+
+let cuisineIndex = 0;
+let dressingIndex = 0;
+
+        let currentTab = 'cuisine';
+        let selectedOffer = null;
+        
+        function openTab(tabName) {
+            // Cacher tous les contenus
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Désactiver tous les boutons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Activer l'onglet sélectionné
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            currentTab = tabName;
+        }
+
+        function nextImage(type) {
+    const img = document.getElementById(`carousel-img-${type}`);
+    if (type === 'cuisine') {
+        cuisineIndex = (cuisineIndex + 1) % cuisineImages.length;
+        img.src = cuisineImages[cuisineIndex];
+    } else if (type === 'dressing') {
+        dressingIndex = (dressingIndex + 1) % dressingImages.length;
+        img.src = dressingImages[dressingIndex];
+    }
+}
+
+
+function prevImage(type) {
+    const img = document.getElementById(`carousel-img-${type}`);
+    if (type === 'cuisine') {
+        cuisineIndex = (cuisineIndex - 1 + cuisineImages.length) % cuisineImages.length;
+        img.src = cuisineImages[cuisineIndex];
+    } else if (type === 'dressing') {
+        dressingIndex = (dressingIndex - 1 + dressingImages.length) % dressingImages.length;
+        img.src = dressingImages[dressingIndex];
+    }
+}
+
+
+    </script>
+</body>
+</html>
